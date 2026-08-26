@@ -15,7 +15,7 @@ sudo dnf install kiwi kiwi-systemdeps distribution-gpg-keys
 Run the build from the repository root:
 
 ```bash
-sudo kiwi-ng system build --description . --target-dir /tmp/horizon-linux-build
+sudo kiwi-ng system build --description . --target-dir /var/tmp/horizon-linux-build
 ```
 
 The resulting ISO is written to `/tmp/horizon-linux-build/`.
