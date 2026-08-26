@@ -1,0 +1,28 @@
+# Horizon Linux GRUB2 theme
+title-text: ""
+desktop-image: "background.png"
+desktop-color: "#080808"
+terminal-font: "Unifont Regular 16"
+
++ boot_menu {
+    left = 15%
+    top = 32%
+    width = 70%
+    height = 45%
+    item_font = "Unifont Regular 16"
+    item_color = "#cccccc"
+    selected_item_font = "Unifont Regular 16"
+    selected_item_color = "#ffffff"
+    item_height = 32
+    item_padding = 8
+    item_spacing = 8
+}
+
++ label {
+    top = 88%
+    left = 0
+    width = 100%
+    align = "center"
+    color = "#8899cc"
+    text = "Use arrow keys to navigate, Enter to boot"
+}

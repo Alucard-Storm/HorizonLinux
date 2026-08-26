@@ -13,7 +13,7 @@
     <packagemanager>dnf5</packagemanager>
     <type image="iso" primary="true" flags="overlay" firmware="uefi"
           hybridpersistent="true" hybridpersistent_filesystem="ext4">
-      <bootloader name="grub2" timeout="5"/>
+      <bootloader name="grub2" timeout="5" grub_template="grub-custom.template"/>
     </type>
   </preferences>
 
