@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Horizon Linux kiwi-ng image description. See build.txt in this same folder for build and test commands. -->
+<image schemaversion="8.0" name="horizon-linux" displayname="Horizon Linux">
+
+  <description type="system">
+    <author>Akshay</author>
+    <contact>-</contact>
+    <specification>Horizon Linux - Fedora 44, Hyprland, Noctalia, CachyOS kernel, Nvidia</specification>
+  </description>
+
+  <preferences>
+    <version>1.0.0</version>
+    <packagemanager>dnf5</packagemanager>
+    <type image="iso" primary="true" flags="overlay" firmware="uefi"
+          hybridpersistent="true" hybridpersistent_filesystem="ext4">
+      <bootloader name="grub2" timeout="5"/>
+    </type>
+  </preferences>
+
+  <users>
+    <user password="$1$1bZlVfNI$.bg.D9.tSyb3sIhnSKz6./" home="/home/horizon"
+          name="horizon" groups="wheel" pwdformat="encrypted"/>
+  </users>
+
+  <!-- ============================= Repositories ============================= -->
+  <repository type="rpm-md" alias="fedora" priority="99">
+    <source path="https://download.fedoraproject.org/pub/fedora/linux/releases/44/Everything/$basearch/os/"/>
+  </repository>
+  <repository type="rpm-md" alias="updates" priority="98">
+    <source path="https://download.fedoraproject.org/pub/fedora/linux/updates/44/Everything/$basearch/"/>
+  </repository>
+  <repository type="rpm-md" alias="rpmfusion-free">
+    <source path="https://download1.rpmfusion.org/free/fedora/releases/44/Everything/$basearch/os/"/>
+  </repository>
+  <repository type="rpm-md" alias="rpmfusion-nonfree">
+    <source path="https://download1.rpmfusion.org/nonfree/fedora/releases/44/Everything/$basearch/os/"/>
+  </repository>
+  <repository type="rpm-md" alias="hyprland-copr">
+    <source path="https://download.copr.fedorainfracloud.org/results/sdegler/hyprland/fedora-44-$basearch/"/>
+  </repository>
+  <repository type="rpm-md" alias="cachyos-kernel">
+    <source path="https://download.copr.fedorainfracloud.org/results/bieszczaders/kernel-cachyos/fedora-44-$basearch/"/>
+  </repository>
+  <repository type="rpm-md" alias="cachyos-addons">
+    <source path="https://download.copr.fedorainfracloud.org/results/bieszczaders/kernel-cachyos-addons/fedora-44-$basearch/"/>
+  </repository>
+
+  <!-- ============================= Bootstrap ============================= -->
+  <packages type="bootstrap">
+    <package name="filesystem"/>
+    <package name="basesystem"/>
+    <package name="fedora-release"/>
+    <package name="dnf5"/>
+    <package name="glibc-langpack-en"/>
+  </packages>
+
+  <!-- ============================= Image packages ============================= -->
+  <packages type="image">
+    <!-- Required by the type flags="overlay" live ISO build -->
+    <package name="dracut-kiwi-live"/>
+
+    <!-- Bootloader: kiwi builds a hybrid BIOS+UEFI ISO, so both module
+         sets are needed even though we only boot UEFI at runtime -->
+    <package name="grub2-tools"/>
+    <package name="grub2-pc"/>
+    <package name="grub2-pc-modules"/>
+    <package name="grub2-efi-x64"/>
+    <package name="grub2-efi-x64-modules"/>
+    <package name="shim-x64"/>
+
+    <!-- CachyOS kernel: bootinclude marks this as THE kernel for the image -->
+    <package name="kernel-cachyos" bootinclude="true"/>
+    <package name="kernel-cachyos-devel-matched"/>
+    <package name="cachyos-settings"/>
+
+    <!-- Nvidia -->
+    <package name="akmod-nvidia"/>
+    <package name="xorg-x11-drv-nvidia-cuda"/>
+    <package name="xorg-x11-drv-nvidia-power"/>
+
+    <!-- Hyprland + Noctalia -->
+    <package name="hyprland"/>
+    <package name="xdg-desktop-portal-hyprland"/>
+    <package name="xdg-desktop-portal-gtk"/>
+    <package name="noctalia"/>
+    <package name="foot"/>
+    <package name="hyprpolkitagent"/>
+    <package name="qt6-qtwayland"/>
+
+    <!-- Session -->
+    <package name="sddm"/>
+    <package name="pipewire"/>
+    <package name="pipewire-pulseaudio"/>
+    <package name="wireplumber"/>
+
+    <!-- Network / firmware / graphics -->
+    <package name="NetworkManager"/>
+    <package name="NetworkManager-wifi"/>
+    <package name="linux-firmware"/>
+    <package name="mesa-dri-drivers"/>
+    <package name="mesa-vulkan-drivers"/>
+    <package name="vulkan-loader"/>
+    <package name="vulkan-tools"/>
+
+    <!-- Apps / admin -->
+    <package name="firefox"/>
+    <package name="firewalld"/>
+    <package name="git"/>
+    <package name="vim-minimal"/>
+    <package name="curl"/>
+    <package name="wget"/>
+    <package name="pciutils"/>
+    <package name="usbutils"/>
+    <package name="hwinfo"/>
+    <package name="inxi"/>
+  </packages>
+
+</image>
