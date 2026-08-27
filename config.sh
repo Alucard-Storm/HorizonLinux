@@ -26,6 +26,12 @@ sed -i 's/^LOGO=.*/LOGO=horizon-linux-logo/' /etc/os-release \
 
 systemctl disable sshd.service 2>/dev/null || true
 
+# sudo package alone isn't enough - Fedora ships /etc/sudoers with the
+# %wheel rule commented out by default, so horizon's wheel membership
+# would do nothing without this.
+sed -i 's/^# %wheel\s\+ALL=(ALL)\s\+ALL/%wheel ALL=(ALL) ALL/' /etc/sudoers \
+    || echo "WARNING: enabling %wheel sudo rule failed" >> /var/log/horizon-post.log
+
 # CachyOS's own docs flag this as required: without it, SELinux in
 # enforcing mode can block loading out-of-tree modules (Nvidia, and
 # the CachyOS kernel's own modules).
@@ -42,18 +48,6 @@ if command -v plymouth-set-default-theme >/dev/null 2>&1; then
         || echo "WARNING: plymouth-set-default-theme failed" >> /var/log/horizon-post.log
 fi
 
-# NOTE: GRUB_THEME expects a full theme directory with a theme.txt file.
-# We only shipped a background image, so use GRUB_BACKGROUND instead -
-# it's the simple "just show this image" option and needs no theme.txt.
-cat >> /etc/default/grub << 'GRUB_EOF'
-GRUB_BACKGROUND="/usr/share/grub2/themes/horizon/background.png"
-GRUB_EOF
-
-if command -v grub2-mkconfig >/dev/null 2>&1; then
-    grub2-mkconfig -o /boot/grub2/grub.cfg \
-        || echo "WARNING: grub2-mkconfig failed" >> /var/log/horizon-post.log
-fi
-
 # --- Nvidia / kernel steps: log and continue on failure ---
 
 if command -v akmods >/dev/null 2>&1; then
@@ -61,9 +55,14 @@ if command -v akmods >/dev/null 2>&1; then
         || echo "WARNING: akmods build failed, rebuild manually after first boot" >> /var/log/horizon-post.log
 fi
 
-if command -v grubby >/dev/null 2>&1; then
-    grubby --update-kernel=ALL --args="nvidia-drm.modeset=1" \
-        || echo "WARNING: grubby nvidia-drm.modeset update failed" >> /var/log/horizon-post.log
+# The module is already built above, at image-creation time, against the
+# exact kernel this live image ships. Since the kernel never changes
+# between build and boot on a live medium, akmods.service re-running the
+# same build on every single boot is pure waste - and on a VM/CPU-limited
+# machine it's slow enough to look like a hang (this was the black-screen
+# stall). Mask it so live boots go straight through.
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl mask akmods.service 2>/dev/null || true
 fi
 
 for unit in nvidia-powerd.service nvidia-hibernate.service nvidia-resume.service nvidia-suspend.service; do

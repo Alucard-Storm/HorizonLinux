@@ -11,8 +11,10 @@
   <preferences>
     <version>1.0.0</version>
     <packagemanager>dnf5</packagemanager>
+    <bootloader-theme>horizon</bootloader-theme>
     <type image="iso" primary="true" flags="overlay" firmware="uefi"
-          hybridpersistent="true" hybridpersistent_filesystem="ext4">
+          hybridpersistent="true" hybridpersistent_filesystem="ext4"
+          kernelcmdline="nvidia-drm.modeset=1">
       <bootloader name="grub2" timeout="5" grub_template="grub-custom.template"/>
     </type>
   </preferences>
@@ -89,6 +91,7 @@
 
     <!-- Session -->
     <package name="sddm"/>
+    <package name="sddm-wayland-generic"/>
     <package name="pipewire"/>
     <package name="pipewire-pulseaudio"/>
     <package name="wireplumber"/>
@@ -113,6 +116,7 @@
     <package name="usbutils"/>
     <package name="hwinfo"/>
     <package name="inxi"/>
+    <package name="sudo"/>
   </packages>
 
 </image>
