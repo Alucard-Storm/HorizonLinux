@@ -4,7 +4,7 @@ Name=Install Horizon Linux
 Comment=Install Horizon Linux to disk
 # liveinst itself needs root, so open a terminal and sudo it there rather
 # than relying on a polkit action that may not exist for liveinst.
-Exec=foot -e sudo liveinst
+Exec=kitty -e sudo liveinst
 Icon=system-installer
 Terminal=false
 Categories=System;
