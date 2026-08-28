@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Horizon Linux kiwi-ng image description. See build.txt in this same folder for build and test commands. -->
+<!-- Horizon Linux kiwi-ng image description. See build.md in this same folder for build and test commands. -->
+<!-- Structure verified against t2linux/fedora-kiwi-descriptions (a fork of the real OSInside/fedora-kiwi-descriptions used to compose actual Fedora release ISOs) so this stays compatible with how Fedora's own live media actually works. -->
 <image schemaversion="8.0" name="horizon-linux" displayname="Horizon Linux">
 
   <description type="system">
@@ -11,40 +12,63 @@
   <preferences>
     <version>1.0.0</version>
     <packagemanager>dnf5</packagemanager>
+    <release-version>44</release-version>
+    <locale>en_US</locale>
+    <keytable>us</keytable>
+    <timezone>UTC</timezone>
     <bootloader-theme>horizon</bootloader-theme>
-    <type image="iso" primary="true" flags="overlay" firmware="uefi"
-          hybridpersistent="true" hybridpersistent_filesystem="ext4"
-          kernelcmdline="nvidia-drm.modeset=1">
-      <bootloader name="grub2" timeout="5" grub_template="grub-custom.template"/>
+    <type image="iso"
+          publisher="Horizon Linux" volid="Horizon_Linux" application_id="Horizon_Linux"
+          primary="true" flags="dmsquash" filesystem="erofs" erofscompression="lzma,level=6"
+          mediacheck="true" firmware="uefi" efiparttable="gpt" efifatimagesize="30"
+          kernelcmdline="quiet rhgb nvidia-drm.modeset=1"
+          fscreateoptions="-Efragments -C 1048576">
+      <bootloader name="grub2" grub_template="grub-custom.template" console="console" timeout="10"/>
     </type>
   </preferences>
 
   <users>
-    <user password="$1$1bZlVfNI$.bg.D9.tSyb3sIhnSKz6./" home="/home/horizon"
+    <user password="horizon" pwdformat="plain" home="/root" name="root" groups="root"/>
+    <user password="$1$og/aSZJl$lA296S89rZ32WMGyyv8FZ0" home="/home/horizon"
           name="horizon" groups="wheel" pwdformat="encrypted"/>
   </users>
 
   <!-- ============================= Repositories ============================= -->
-  <repository type="rpm-md" alias="fedora" priority="99">
-    <source path="https://download.fedoraproject.org/pub/fedora/linux/releases/44/Everything/$basearch/os/"/>
+  <!-- Fedora is pulled over metalink (mirror-aware, unlike the single
+       download.fedoraproject.org redirector) with GPG verification. The
+       signing keys ship in the distribution-gpg-keys package, which is a
+       documented build prerequisite - see build.md. $releasever comes from
+       <release-version> above. -->
+  <repository type="rpm-md" alias="fedora" sourcetype="metalink" priority="99">
+    <source path="https://mirrors.fedoraproject.org/metalink?repo=fedora-$releasever&amp;arch=$basearch">
+      <signing key="file:///usr/share/distribution-gpg-keys/fedora/RPM-GPG-KEY-fedora-$releasever-primary"/>
+    </source>
   </repository>
-  <repository type="rpm-md" alias="updates" priority="98">
-    <source path="https://download.fedoraproject.org/pub/fedora/linux/updates/44/Everything/$basearch/"/>
+  <repository type="rpm-md" alias="updates" sourcetype="metalink" priority="98">
+    <source path="https://mirrors.fedoraproject.org/metalink?repo=updates-released-f$releasever&amp;arch=$basearch">
+      <signing key="file:///usr/share/distribution-gpg-keys/fedora/RPM-GPG-KEY-fedora-$releasever-primary"/>
+    </source>
   </repository>
-  <repository type="rpm-md" alias="rpmfusion-free">
-    <source path="https://download1.rpmfusion.org/free/fedora/releases/44/Everything/$basearch/os/"/>
+
+  <!-- RPM Fusion over metalink. distribution-gpg-keys does not ship the
+       RPM Fusion keys, so these are not GPG-verified at build time. -->
+  <repository type="rpm-md" alias="rpmfusion-free" sourcetype="metalink">
+    <source path="https://mirrors.rpmfusion.org/metalink?repo=free-fedora-$releasever&amp;arch=$basearch"/>
   </repository>
-  <repository type="rpm-md" alias="rpmfusion-nonfree">
-    <source path="https://download1.rpmfusion.org/nonfree/fedora/releases/44/Everything/$basearch/os/"/>
+  <repository type="rpm-md" alias="rpmfusion-nonfree" sourcetype="metalink">
+    <source path="https://mirrors.rpmfusion.org/metalink?repo=nonfree-fedora-$releasever&amp;arch=$basearch"/>
   </repository>
+
+  <!-- COPR: no metalink is offered, and the per-project signing keys are not
+       shipped by distribution-gpg-keys, so these stay unverified. -->
   <repository type="rpm-md" alias="hyprland-copr">
-    <source path="https://download.copr.fedorainfracloud.org/results/sdegler/hyprland/fedora-44-$basearch/"/>
+    <source path="https://download.copr.fedorainfracloud.org/results/sdegler/hyprland/fedora-$releasever-$basearch/"/>
   </repository>
   <repository type="rpm-md" alias="cachyos-kernel">
-    <source path="https://download.copr.fedorainfracloud.org/results/bieszczaders/kernel-cachyos/fedora-44-$basearch/"/>
+    <source path="https://download.copr.fedorainfracloud.org/results/bieszczaders/kernel-cachyos/fedora-$releasever-$basearch/"/>
   </repository>
   <repository type="rpm-md" alias="cachyos-addons">
-    <source path="https://download.copr.fedorainfracloud.org/results/bieszczaders/kernel-cachyos-addons/fedora-44-$basearch/"/>
+    <source path="https://download.copr.fedorainfracloud.org/results/bieszczaders/kernel-cachyos-addons/fedora-$releasever-$basearch/"/>
   </repository>
 
   <!-- ============================= Bootstrap ============================= -->
@@ -54,13 +78,11 @@
     <package name="fedora-release"/>
     <package name="dnf5"/>
     <package name="glibc-langpack-en"/>
+    <package name="grubby"/>
   </packages>
 
   <!-- ============================= Image packages ============================= -->
   <packages type="image">
-    <!-- Required by the type flags="overlay" live ISO build -->
-    <package name="dracut-kiwi-live"/>
-
     <!-- Bootloader: kiwi builds a hybrid BIOS+UEFI ISO, so both module
          sets are needed even though we only boot UEFI at runtime -->
     <package name="grub2-tools"/>
@@ -70,7 +92,10 @@
     <package name="grub2-efi-x64-modules"/>
     <package name="shim-x64"/>
 
-    <!-- CachyOS kernel: bootinclude marks this as THE kernel for the image -->
+    <!-- Matches upstream boot.xml's BootCore image packages -->
+    <package name="systemd-oomd-defaults"/>
+    <package name="systemd-resolved"/>
+
     <package name="kernel-cachyos" bootinclude="true"/>
     <package name="kernel-cachyos-devel-matched"/>
     <package name="cachyos-settings"/>
@@ -96,10 +121,19 @@
     <package name="pipewire-pulseaudio"/>
     <package name="wireplumber"/>
 
+    <!-- Boot splash: config.sh selects the "spinner" theme and the root/
+         overlay drops Horizon artwork into it; the label plugin renders
+         the progress text. -->
+    <package name="plymouth"/>
+    <package name="plymouth-theme-spinner"/>
+    <package name="plymouth-plugin-label"/>
+
     <!-- Network / firmware / graphics -->
     <package name="NetworkManager"/>
     <package name="NetworkManager-wifi"/>
+    <package name="NetworkManager-tui"/>
     <package name="linux-firmware"/>
+    <package name="alsa-sof-firmware"/>
     <package name="mesa-dri-drivers"/>
     <package name="mesa-vulkan-drivers"/>
     <package name="vulkan-loader"/>
@@ -117,6 +151,39 @@
     <package name="hwinfo"/>
     <package name="inxi"/>
     <package name="sudo"/>
+    <package name="xdg-user-dirs"/>
+  </packages>
+
+  <!-- Packages/files specific to building a bootable live ISO, matching
+       the structural split in Fedora's own liveinstall.xml: these are
+       NOT part of the general root filesystem - only relevant to how the
+       ISO itself boots, self-checks, and optionally installs to disk. -->
+  <packages type="iso">
+    <!-- Filter out unwanted EFI files from the embedded ESP - Fedora's own
+         documented fix, see rhbz#2358785. Wires up iso-esp-excludes.yaml. -->
+    <file name="iso-esp-excludes.yaml" target="image/exclude_files_efifatimage.yaml"/>
+
+    <!-- CD/ISO El Torito EFI boot catalog - genuinely separate from
+         grub2-efi-x64 above, which is for disk boot. -->
+    <package name="grub2-efi-x64-cdboot"/>
+
+    <!-- dmsquash live mechanism (replaces dracut-kiwi-live) -->
+    <package name="dracut-live"/>
+    <!-- Needed for mediacheck="true" above and the "Test this media"
+         GRUB entry (rd.live.check) in grub-custom.template -->
+    <package name="isomd5sum"/>
+    <!-- Fedora's live-session helper scripts (live user/hostname setup
+         hooks). May need adjustment against our custom Hyprland/Noctalia
+         skel if it assumes a GNOME-style session. -->
+    <package name="livesys-scripts"/>
+    <package name="glibc-all-langpacks"/>
+    <package name="btrfs-progs"/>
+    <package name="udisks2-btrfs"/>
+
+    <!-- Installer: lets the live session install Horizon to disk
+         (launch from the app launcher or run `sudo liveinst`). -->
+    <package name="anaconda-live"/>
+    <package name="anaconda-install-env-deps"/>
   </packages>
 
 </image>
