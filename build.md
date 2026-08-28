@@ -37,7 +37,9 @@ sudo qemu-system-x86_64 -enable-kvm -m 4096 -serial stdio \
 ## Install to disk
 
 The live session ships Anaconda. Launch it from the Noctalia app launcher
-(`Super+Space`) or run `sudo liveinst` from a terminal.
+(`Super+Space`) or run `liveinst` from a terminal - it escalates itself via
+pkexec, so do not prefix it with `sudo` (that breaks the Web UI's handoff to
+the graphical session).
 
 ## Notes
 

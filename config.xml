@@ -226,8 +226,8 @@
     <package name="btrfs-progs"/>
     <package name="udisks2-btrfs"/>
 
-    <!-- Installer: lets the live session install Horizon to disk
-         (launch from the app launcher or run `sudo liveinst`). -->
+    <!-- Installer: lets the live session install Horizon to disk (launch
+         from the app launcher or run `liveinst`). -->
     <package name="anaconda-live"/>
     <package name="anaconda-install-env-deps"/>
   </packages>

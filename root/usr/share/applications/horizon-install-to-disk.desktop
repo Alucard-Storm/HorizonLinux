@@ -2,10 +2,14 @@
 Type=Application
 Name=Install Horizon Linux
 Comment=Install Horizon Linux to disk
-# liveinst itself needs root, so open a terminal and sudo it there rather
-# than relying on a polkit action that may not exist for liveinst.
-Exec=kitty -e sudo liveinst
-Icon=system-installer
+# Run liveinst directly - NOT via sudo/terminal. liveinst re-execs itself
+# through pkexec (org.fedoraproject.pkexec.liveinst.policy, shipped by the
+# anaconda package), which is what sets PKEXEC_UID so webui-desktop can
+# reuse the liveuser's Wayland session. Running it under `sudo` skips that
+# path and the Web UI browser never attaches to the display.
+Exec=liveinst
+Icon=org.fedoraproject.AnacondaInstaller
 Terminal=false
 Categories=System;
 StartupNotify=true
+StartupWMClass=liveinst
