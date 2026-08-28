@@ -152,6 +152,52 @@
     <package name="inxi"/>
     <package name="sudo"/>
     <package name="xdg-user-dirs"/>
+
+    <!-- Bluetooth: backend + a GUI applet. Noctalia may have its own
+         bluetooth panel, but bluez is the actual backend daemon either
+         way - without it, bluetooth hardware does nothing regardless of
+         which GUI sits on top. -->
+    <package name="bluez"/>
+    <package name="blueman"/>
+
+    <!-- Laptop power profiles (balanced/performance/power-saver) -->
+    <package name="power-profiles-daemon"/>
+
+    <!-- File management: pcmanfm-qt is Qt-based, matching Noctalia's Qt6
+         base rather than pulling in GTK's full Nautilus/gvfs stack or
+         KDE Frameworks just for Dolphin. gvfs still included since most
+         file operations (trash, network mounts) expect it regardless of
+         which file manager sits on top. -->
+    <package name="pcmanfm-qt"/>
+    <package name="gvfs"/>
+    <package name="xarchiver"/>
+
+    <!-- Wayland screenshot + clipboard primitives - grim/slurp is the
+         de facto standard capture+region-select pair for wlroots
+         compositors like Hyprland; wl-clipboard gives wl-copy/wl-paste
+         for anything that shells out to the clipboard. -->
+    <package name="grim"/>
+    <package name="slurp"/>
+    <package name="wl-clipboard"/>
+
+    <!-- Media: mpv covers video/audio; imv is a lightweight Wayland-
+         native image viewer; zathura is a lightweight, keyboard-driven
+         PDF viewer fitting a tiling-WM setup better than a full GTK/KDE
+         document viewer. -->
+    <package name="mpv"/>
+    <package name="imv"/>
+    <package name="zathura"/>
+    <package name="zathura-pdf-mupdf"/>
+
+    <!-- Lightweight GUI text editor - featherpad is Qt-based, not GTK,
+         and far lighter than kate (which pulls KDE Frameworks). -->
+    <package name="featherpad"/>
+
+    <!-- System monitor + branding touch. fastfetch is the modern,
+         actively maintained neofetch replacement most custom spins use
+         to show off distro identity. -->
+    <package name="btop"/>
+    <package name="fastfetch"/>
   </packages>
 
   <!-- Packages/files specific to building a bootable live ISO, matching
