@@ -13,7 +13,8 @@ Horizon Linux is a Fedora 44 live-spin definition for a Hyprland desktop. It com
 - CachyOS kernel, matched development package, and userspace settings from COPR.
 - RPM Fusion NVIDIA packages, CUDA support, DRM modesetting, and available NVIDIA power-management services.
 - The Anaconda installer, for installing Horizon to disk from the live session.
-- NetworkManager, Firefox, firmware, Vulkan/Mesa utilities, and basic system diagnostics.
+- GParted for partitioning, with NTFS/exFAT filesystem tools and `smartctl` for disk health.
+- NetworkManager, Firefox, the PCManFM-Qt file manager, firmware, Vulkan/Mesa utilities, and basic system diagnostics.
 
 For image creation and QEMU testing, see the [build guide](build.md).
 

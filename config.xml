@@ -172,6 +172,19 @@
     <package name="gvfs"/>
     <package name="xarchiver"/>
 
+    <!-- Storage / disks: gparted is the full partition editor (create,
+         resize, move, label) expected next to a disk installer. It is GTK,
+         but there is no maintained Qt equivalent that does not drag in the
+         whole of KDE Frameworks. ntfs-3g + ntfsprogs and exfatprogs let
+         gparted, the installer, and the file manager format and mount
+         Windows / removable-drive filesystems; smartmontools provides
+         `smartctl` for disk health. -->
+    <package name="gparted"/>
+    <package name="ntfs-3g"/>
+    <package name="ntfsprogs"/>
+    <package name="exfatprogs"/>
+    <package name="smartmontools"/>
+
     <!-- Wayland screenshot + clipboard primitives - grim/slurp is the
          de facto standard capture+region-select pair for wlroots
          compositors like Hyprland; wl-clipboard gives wl-copy/wl-paste
