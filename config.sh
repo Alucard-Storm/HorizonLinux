@@ -67,6 +67,20 @@ if command -v plymouth-set-default-theme >/dev/null 2>&1; then
         || warn "plymouth-set-default-theme failed"
 fi
 
+# --- Desktop hardware services ---
+# These have Fedora presets, but this image enables its services explicitly
+# rather than trusting preset application inside the kiwi root (same reason
+# NetworkManager/firewalld/sddm are enabled by hand above).
+#   - bluetooth.service         : bluez backend for blueman / the Noctalia panel
+#   - power-profiles-daemon     : balanced/performance/power-saver switching
+#   - fwupd-refresh.timer       : periodic LVFS firmware-metadata refresh
+#     (fwupd.service itself is D-Bus/socket activated - no enable needed)
+# gnome-keyring needs no wiring here: Fedora's /etc/pam.d/sddm already loads
+# pam_gnome_keyring on auth + session, so the login password unlocks it.
+for unit in bluetooth.service power-profiles-daemon.service fwupd-refresh.timer; do
+    systemctl enable "$unit" 2>/dev/null || warn "could not enable $unit"
+done
+
 # --- Nvidia / kernel: log and continue on failure ---
 # In a chroot, akmods defaults to `uname -r`, i.e. the BUILD HOST kernel -
 # not the CachyOS kernel this image ships. Build explicitly against the

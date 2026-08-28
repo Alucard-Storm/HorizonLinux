@@ -9,12 +9,14 @@ Horizon Linux is a Fedora 44 live-spin definition for a Hyprland desktop. It com
 ## Included
 
 - Fedora 44 live environment with SELinux enforcing and `firewalld` enabled.
-- Hyprland, SDDM, Noctalia, Foot, PipeWire, and the required Wayland portals.
+- Hyprland, SDDM, Noctalia, kitty, PipeWire, and the required Wayland portals.
 - CachyOS kernel, matched development package, and userspace settings from COPR.
 - RPM Fusion NVIDIA packages, CUDA support, DRM modesetting, and available NVIDIA power-management services.
 - The Anaconda installer, for installing Horizon to disk from the live session.
 - GParted for partitioning, with NTFS/exFAT filesystem tools and `smartctl` for disk health.
-- NetworkManager, Firefox, the PCManFM-Qt file manager, firmware, Vulkan/Mesa utilities, and basic system diagnostics.
+- NetworkManager, Firefox, the PCManFM-Qt file manager, archive tools, firmware, Vulkan/Mesa utilities, and basic system diagnostics.
+- Flatpak with the Flathub remote preconfigured, `gnome-keyring` for saved secrets, `fwupd` for firmware updates.
+- Emoji, CJK and UI fonts, Bluetooth (`bluez`/`blueman`), and `power-profiles-daemon`.
 
 For image creation and QEMU testing, see the [build guide](build.md).
 
@@ -26,13 +28,22 @@ SDDM defaults to Hyprland without enabling autologin. New accounts receive a min
 
 | Binding | Action |
 | --- | --- |
-| `Super+Return` | Open Foot |
+| `Super+Return` | Open the terminal (kitty) |
+| `Super+B` | Open Firefox |
+| `Super+E` | Open the file manager |
 | `Super+Space` | Toggle the Noctalia launcher |
 | `Super+S` | Toggle the Noctalia control center |
 | `Super+,` | Toggle Noctalia settings |
 | `Super+Q` | Close the active window |
-| `Super+M` | Exit Hyprland |
 | `Super+F` | Toggle fullscreen |
+| `Super+V` | Toggle floating |
+| `Super+L` | Lock the session |
+| `Super`+drag | Move (left button) / resize (right button) a window |
+| `Super`+`1`–`0` | Switch workspace (`Super+Shift` sends the window there) |
+| `Super`+arrows | Move focus (`Super+Shift` moves the window) |
+| `Super+Shift+M` | Exit Hyprland (no confirmation) |
+| `Print` / `Shift`+`Print` / `Ctrl`+`Print` | Screenshot: whole screen to file / region to file / region to clipboard |
+| Volume / brightness / media keys | Wired to `wpctl`, `brightnessctl` and `playerctl` |
 
 ## NVIDIA Notes
 

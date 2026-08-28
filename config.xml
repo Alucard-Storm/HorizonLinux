@@ -152,6 +152,26 @@
     <package name="inxi"/>
     <package name="sudo"/>
     <package name="xdg-user-dirs"/>
+    <!-- Minimal Fedora ships no man pages; this spin ships git/vim/curl and
+         expects terminal use, so `man <thing>` should work. -->
+    <package name="man-db"/>
+    <package name="man-pages"/>
+    <!-- Hardware keys: brightnessctl backs the backlight binds in the skel
+         hyprland.conf; playerctl backs the play/pause/next/prev media
+         binds. Volume keys use wpctl from wireplumber (already included). -->
+    <package name="brightnessctl"/>
+    <package name="playerctl"/>
+
+    <!-- Fonts: a minimal root has almost none. Noto sans/serif/mono covers
+         Latin; without the emoji and CJK faces the browser, shell and chat
+         apps render tofu boxes. Inter is a common UI face for Wayland
+         shells like Noctalia. -->
+    <package name="google-noto-sans-fonts"/>
+    <package name="google-noto-serif-fonts"/>
+    <package name="google-noto-sans-mono-fonts"/>
+    <package name="google-noto-color-emoji-fonts"/>
+    <package name="google-noto-sans-cjk-fonts"/>
+    <package name="rsms-inter-fonts"/>
 
     <!-- Bluetooth: backend + a GUI applet. Noctalia may have its own
          bluetooth panel, but bluez is the actual backend daemon either
@@ -171,6 +191,12 @@
     <package name="pcmanfm-qt"/>
     <package name="gvfs"/>
     <package name="xarchiver"/>
+    <!-- xarchiver is only a frontend - it needs these CLI backends to open
+         the formats users actually get sent. unrar is from rpmfusion-nonfree
+         (already enabled). tar/gzip/bzip2/xz support is in the base. -->
+    <package name="unzip"/>
+    <package name="7zip"/>
+    <package name="unrar"/>
 
     <!-- Storage / disks: gparted is the full partition editor (create,
          resize, move, label) expected next to a disk installer. It is GTK,
@@ -211,6 +237,21 @@
          to show off distro identity. -->
     <package name="btop"/>
     <package name="fastfetch"/>
+
+    <!-- Post-install quality of life:
+         - flatpak: the base app set is deliberately small; Flathub gives
+           users a way to install everything else. The Flathub remote is
+           shipped statically in root/etc/flatpak/remotes.d/ so no network
+           call is needed at build time.
+         - gnome-keyring: Secret Service provider. Without it "remember
+           password" in Firefox and NetworkManager VPN secrets silently
+           fail. Fedora's sddm PAM stack already loads pam_gnome_keyring,
+           so installing it is all that is needed.
+         - fwupd: firmware updates (UEFI, SSDs, docks, peripherals) via
+           LVFS on real hardware. config.sh enables its refresh timer. -->
+    <package name="flatpak"/>
+    <package name="gnome-keyring"/>
+    <package name="fwupd"/>
   </packages>
 
   <!-- Packages/files specific to building a bootable live ISO, matching
